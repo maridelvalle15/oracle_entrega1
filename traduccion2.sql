@@ -4,6 +4,7 @@ DROP TABLE PROYECTO CASCADE CONSTRAINTS;
 DROP TABLE PROYECTDESARR CASCADE CONSTRAINTS;
 DROP TABLE DESARROLLADOR CASCADE CONSTRAINTS;
 DROP TABLE Cliente CASCADE CONSTRAINTS;
+DROP TYPE telefonos force;
 DROP TYPE PROYECTDESARR_T force;
 DROP TYPE PROYECTO_T force;
 DROP TYPE Departamento_T force;
@@ -17,18 +18,16 @@ DROP TYPE Cliente_T force;
 *************** OBJETOS ******************
 *****************************************/
 
-/*		Relacion 1:1 Jefe-Departamento		*/
-CREATE OR REPLACE TYPE Jefe_T AS OBJECT
-	(cedula CHAR(10),
-	nombre VARCHAR2(20),
-	apellido VARCHAR2(20),
-	telefonos NUMBER);
+/*		Creamos un arreglo de maximo 3 numeros de telefono		*/
+CREATE OR REPLACE TYPE telefonos IS VARRAY(3) of NUMBER;
 /
 
-/*		Relacion 1:1 Jefe-Departamento		*/
-CREATE OR REPLACE TYPE Departamento_T AS OBJECT
-	(nombre VARCHAR2(40),
-	jefe_dep REF Jefe_T);
+/*		Creamos tipo para relacion 1:1 Jefe-Departamento		*/
+CREATE OR REPLACE TYPE Jefe_T;
+/
+
+/*		Creamos tipo relacion 1:1 Jefe-Departamento		*/
+CREATE OR REPLACE TYPE Departamento_T;
 /
 
 /*		Relacion 1:N Desarrollador-Departamento 
@@ -38,7 +37,7 @@ CREATE OR REPLACE TYPE Desarrollador_T AS OBJECT
 	(cedula CHAR(10),
 	nombre VARCHAR2(20),
 	apellido VARCHAR2(20),
-	telefonos NUMBER)NOT FINAL;
+	tlf telefonos)NOT FINAL;
 /
 
 /*		Desarrollador senior subclase de Desarrollador
@@ -63,19 +62,19 @@ CREATE OR REPLACE TYPE Desarrollador_junior_T UNDER Desarrollador_T
 CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF REF Desarrollador_T;
 /
 
-/*		Agregamos la referencia a la tabla de desarrolladores		*/
-CREATE OR REPLACE TYPE Departamento_T FORCE AS OBJECT
+/*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
+CREATE OR REPLACE TYPE Departamento_T AS OBJECT
 	(nombre VARCHAR2(40),
 	jefe_dep REF Jefe_T,
 	desarrolladores Desarrollador_ref);
 /
 
-/*		Agregamos la referencia a departamento		*/
-CREATE OR REPLACE TYPE Jefe_T FORCE AS OBJECT
+/*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
+CREATE OR REPLACE TYPE Jefe_T AS OBJECT
 	(cedula CHAR(10),
 	nombre VARCHAR2(20),
 	apellido VARCHAR2(20),
-	telefonos NUMBER,
+	tlf telefonos,
 	dep REF Departamento_T);
 /
 
@@ -83,7 +82,7 @@ CREATE OR REPLACE TYPE Jefe_T FORCE AS OBJECT
 CREATE OR REPLACE TYPE Cliente_T AS OBJECT
 	(Id VARCHAR(10),
 	nombre VARCHAR(40),
-	telefonos NUMBER);
+	tlf telefonos);
 /
 
 /*		Relacion 1:N Cliente-Proyecto		*/
