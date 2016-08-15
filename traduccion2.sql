@@ -35,7 +35,7 @@ CREATE OR REPLACE TYPE Departamento_T;
 CREATE OR REPLACE TYPE Proyecto_T;
 /
 
-/**/
+/*		Creamos tipo relacion 1:N Desarrollador senior - Desarrollador junior		*/
 CREATE OR REPLACE TYPE Desarrollador_senior_T;
 /
 
@@ -60,7 +60,7 @@ CREATE OR REPLACE TYPE Desarrollador_junior_T UNDER Desarrollador_T
 	member function obtener_sueldo return NUMBER);
 /
 
-/**/
+/*		Creamos una tabla para obtener la coleccion de juniors en senior		*/
 CREATE OR REPLACE TYPE Juniors AS TABLE OF Desarrollador_junior_T;
 /
 
