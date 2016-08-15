@@ -8,8 +8,9 @@ DROP TYPE telefonos force;
 DROP TYPE PROYECTDESARR_T force;
 DROP TYPE PROYECTO_T force;
 DROP TYPE Departamento_T force;
-DROP TYPE Desarrollador_movil_T force;
-DROP TYPE Desarrollador_web_T force;
+DROP TYPE Juniors force;
+DROP TYPE Desarrollador_senior_T force;
+DROP TYPE Desarrollador_junior_T force;
 DROP TYPE Desarrollador_T force;
 DROP TYPE JEFE_T force;
 DROP TYPE Cliente_T force;
@@ -30,6 +31,14 @@ CREATE OR REPLACE TYPE Jefe_T;
 CREATE OR REPLACE TYPE Departamento_T;
 /
 
+/*		Creamos tipo relacion 1:N Cliente-Proyecto		*/
+CREATE OR REPLACE TYPE Proyecto_T;
+/
+
+/**/
+CREATE OR REPLACE TYPE Desarrollador_senior_T;
+/
+
 /*		Relacion 1:N Desarrollador-Departamento 
 		Desarrollador superclase
 */
@@ -40,14 +49,6 @@ CREATE OR REPLACE TYPE Desarrollador_T AS OBJECT
 	tlf telefonos)NOT FINAL;
 /
 
-/*		Desarrollador senior subclase de Desarrollador
-		Relacion 1:N Desarrollador senior-Desarrolador junior		
-*/
-CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
-	(sueldo NUMBER,
-	anios_empresa NUMBER,
-	member function obtener_sueldo return NUMBER);
-/
 
 /*		Desarrollador junior subclase de Desarrollador		
 		Relacion 1:N Desarrollador senior-Desarrolador junior
@@ -55,6 +56,21 @@ CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
 CREATE OR REPLACE TYPE Desarrollador_junior_T UNDER Desarrollador_T
 	(sueldo NUMBER,
 	tipo_desarrollo VARCHAR(20),
+	senior REF Desarrollador_senior_T,
+	member function obtener_sueldo return NUMBER);
+/
+
+/**/
+CREATE OR REPLACE TYPE Juniors AS TABLE OF Desarrollador_junior_T;
+/
+
+/*		Desarrollador senior subclase de Desarrollador
+		Relacion 1:N Desarrollador senior-Desarrolador junior		
+*/
+CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
+	(sueldo NUMBER,
+	anios_empresa NUMBER,
+	member function obtener_juniors return Juniors,
 	member function obtener_sueldo return NUMBER);
 /
 
@@ -78,20 +94,25 @@ CREATE OR REPLACE TYPE Jefe_T AS OBJECT
 	dep REF Departamento_T);
 /
 
+/*		Creamos tabla de referencias para Proyecto		*/
+CREATE OR REPLACE TYPE Proyectos_ref AS TABLE OF REF Proyecto_T;
+/
+
 /*		Relacion 1:N Cliente-Proyecto		*/
 CREATE OR REPLACE TYPE Cliente_T AS OBJECT
 	(Id VARCHAR(10),
 	nombre VARCHAR(40),
-	tlf telefonos);
+	tlf telefonos,
+	proyectos Proyectos_ref);
 /
 
 /*		Relacion 1:N Cliente-Proyecto		*/
 CREATE OR REPLACE TYPE Proyecto_T AS OBJECT
-	(nombre VARCHAR2(30),
-	descripcion VARCHAR2(50),
+	(nombre VARCHAR2(50),
+	descripcion VARCHAR2(100),
 	duracion VARCHAR2(20),
 	tipo VARCHAR2(5),
-	cliente REF Cliente_T,
+	costo NUMBER,
 	member function obtener_costo return NUMBER);
 /
 
@@ -114,11 +135,11 @@ CREATE TABLE Desarrollador OF Desarrollador_T
 	(PRIMARY KEY (cedula));
 
 CREATE TABLE Cliente of Cliente_T
-	(PRIMARY KEY (Id));
+	(PRIMARY KEY (Id))
+	Nested table proyectos STORE AS proyectos_store;
 
 CREATE TABLE Proyecto of Proyecto_T
-	(PRIMARY KEY (nombre),
-	foreign key (cliente) references Cliente);
+	(PRIMARY KEY (nombre));
 
 /* Tabla intermedia para relacionar proyectos con desarrolladores*/
 CREATE TABLE ProyectDesarr of ProyectDesarr_T 

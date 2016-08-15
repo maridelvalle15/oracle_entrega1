@@ -10,7 +10,21 @@ INSERT INTO Jefe VALUES
 
 /*		Creamos desarrolladores		*/	
 INSERT INTO Desarrollador
-	VALUES (Desarrollador_senior_T('20674321','Mathieu','De Valery',telefonos(04143276648),100000,20));
+	VALUES (Desarrollador_senior_T('20674321','Mathieu','De Valery',telefonos(04143276648),100000,10));
+
+INSERT INTO Desarrollador
+	VALUES (Desarrollador_junior_T('20432998',
+									'Emmanuel',
+									'De Aguiar',
+									telefonos(04265438870),
+									200000,
+									20,NULL));
+
+UPDATE Desarrollador d SET VALUE(d).senior = (select value(de) from desarrollador de where de.cedula='20674321')
+			WHERE d.cedula='20432998';
+
+
+
 
 /*		Creamos departamentos, con referencia a:
  		- jefe que los dirige  
@@ -32,6 +46,28 @@ INSERT INTO Departamento
 UPDATE Jefe SET dep = (SELECT REF(d) FROM Departamento d WHERE d.nombre='Departamento 1') WHERE cedula='6544230';
 UPDATE Jefe SET dep = (SELECT REF(d) FROM Departamento d WHERE d.nombre='Departamento 2') WHERE cedula='6544230';
 
+/*		Creamos proyectos		*/
+INSERT INTO Proyecto VALUES 
+		('Mejora aplicacion mercadolibre',
+		'Act dependencias aplicacion',
+		'3 meses',
+		'web',
+		600000);
+
+/*		Creamos clientes		*/
+INSERT INTO Cliente
+	SELECT '7364527',
+			'Jorge Perez',
+			telefonos(04241087644),
+			Proyectos_ref(REF(p))
+	FROM Proyecto p WHERE p.nombre='Mejora aplicacion mercadolibre';
+
+/* Creamos la relacion entre proyectos y sus desarrolladores */
+INSERT INTO ProyectDesarr VALUES (
+	(SELECT REF (p) FROM Proyecto p WHERE p.nombre='Mejora aplicacion mercadolibre'),
+	(SELECT REF (d) FROM Desarrollador d WHERE d.cedula='20674321'));
+
+/* 
 
 /*****************************************
 *************** CONSULTAS ****************
