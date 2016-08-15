@@ -155,7 +155,7 @@ INSERT INTO ProyectDesarr VALUES (
 
 /*****************************************
 *************** CONSULTAS ****************
-**************************************REF
+******************************************
 /* Consultamos al jefe del Departamento 1 */
 SELECT DEREF(d.jefe_dep) FROM Departamento d WHERE d.nombre='Departamento 1';
 

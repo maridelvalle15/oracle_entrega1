@@ -51,7 +51,9 @@ CREATE OR REPLACE TYPE Desarrollador_T AS OBJECT
 
 
 /*		Desarrollador junior subclase de Desarrollador		
-		Relacion 1:N Desarrollador senior-Desarrolador junior
+		Relacion 1:N Desarrollador senior-Desarrollador junior
+		Para la relacion, se coloca REF de un lado y member function
+		del otro
 */
 CREATE OR REPLACE TYPE Desarrollador_junior_T UNDER Desarrollador_T
 	(sueldo NUMBER,
@@ -61,11 +63,11 @@ CREATE OR REPLACE TYPE Desarrollador_junior_T UNDER Desarrollador_T
 /
 
 /*		Creamos una tabla para obtener la coleccion de juniors en senior		*/
-CREATE OR REPLACE TYPE Juniors AS TABLE OF Desarrollador_junior_T;
+CREATE OR REPLACE TYPE Juniors AS TABLE OF REF Desarrollador_junior_T;
 /
 
 /*		Desarrollador senior subclase de Desarrollador
-		Relacion 1:N Desarrollador senior-Desarrolador junior		
+		Relacion 1:N Desarrollador senior-Desarrollador junior		
 */
 CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
 	(sueldo NUMBER,
@@ -74,18 +76,26 @@ CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
 	member function obtener_sueldo return NUMBER);
 /
 
-/*		Creamos tabla de referencias para Desarrollador		*/
+/*		Creamos tabla de referencias para Desarrollador
+		Sera utilizada en Departamento_T
+*/
 CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF REF Desarrollador_T;
 /
 
-/*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
+/*		Creamos objeto para relacion 1:1 Jefe-Departamento	
+		Creamos una referencia en cada clase participante en
+		la relacion
+*/
 CREATE OR REPLACE TYPE Departamento_T AS OBJECT
 	(nombre VARCHAR2(40),
 	jefe_dep REF Jefe_T,
 	desarrolladores Desarrollador_ref);
 /
 
-/*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
+/*		Creamos objeto para relacion 1:1 Jefe-Departamento		
+		Creamos una referencia en cada clase participante en
+		la relacion
+*/
 CREATE OR REPLACE TYPE Jefe_T AS OBJECT
 	(cedula CHAR(10),
 	nombre VARCHAR2(20),
@@ -104,17 +114,22 @@ CREATE OR REPLACE TYPE Proyecto_T AS OBJECT
 	member function obtener_costo return NUMBER);
 /
 
-/* Objeto para tabla intermedia para relacionar proyectos con desarrolladores*/
+/*		Objeto para tabla intermedia para relacionar proyectos con desarrolladores		*/
 CREATE OR REPLACE TYPE ProyectDesarr_T AS OBJECT
 	(proyecto REF Proyecto_T,
 	desarrollador REF Desarrollador_T);
 /
 
-/*		Creamos tabla de referencias para Proyecto		*/
+/*		Creamos tabla de referencias para Proyecto		
+		Sera utilizada en Cliente_T
+*/
 CREATE OR REPLACE TYPE Proyectos_ref AS TABLE OF REF Proyecto_T;
 /
 
-/*		Relacion 1:N Cliente-Proyecto		*/
+/*		Relacion 1:N Cliente-Proyecto		
+		Para la relacion, se coloca REF de un lado y member function
+		del otro
+*/
 CREATE OR REPLACE TYPE Cliente_T AS OBJECT
 	(Id VARCHAR(10),
 	nombre VARCHAR(40),
@@ -134,15 +149,16 @@ CREATE TABLE Departamento OF Departamento_T
 CREATE TABLE Desarrollador OF Desarrollador_T
 	(PRIMARY KEY (cedula));
 
-CREATE TABLE Cliente of Cliente_T
+/*		Creacion de la tabla anidada de proyectos		*/
+CREATE TABLE Cliente OF Cliente_T
 	(PRIMARY KEY (Id))
 	Nested table proyectos STORE AS proyectos_store;
 
-CREATE TABLE Proyecto of Proyecto_T
+CREATE TABLE Proyecto OF Proyecto_T
 	(PRIMARY KEY (nombre));
 
 /* Tabla intermedia para relacionar proyectos con desarrolladores*/
-CREATE TABLE ProyectDesarr of ProyectDesarr_T 
+CREATE TABLE ProyectDesarr OF ProyectDesarr_T 
 	(foreign key (proyecto) references Proyecto,
 	foreign key (desarrollador) references Desarrollador);
 
@@ -150,7 +166,7 @@ CREATE TABLE ProyectDesarr of ProyectDesarr_T
 	Para mantener la integridad referencial, 
 	se crearia un trigger (relacion 1:1)
 */
-CREATE TABLE Jefe of Jefe_T 
+CREATE TABLE Jefe OF Jefe_T 
 	(PRIMARY KEY (cedula),
 	foreign key (dep) references Departamento);
 
