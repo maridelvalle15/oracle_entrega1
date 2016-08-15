@@ -75,7 +75,7 @@ CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
 /
 
 /*		Creamos tabla de referencias para Desarrollador		*/
-CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF Desarrollador_T;
+CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF REF Desarrollador_T;
 /
 
 /*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
@@ -94,6 +94,22 @@ CREATE OR REPLACE TYPE Jefe_T AS OBJECT
 	dep REF Departamento_T);
 /
 
+/*		Relacion 1:N Cliente-Proyecto		*/
+CREATE OR REPLACE TYPE Proyecto_T AS OBJECT
+	(nombre VARCHAR2(50),
+	descripcion VARCHAR2(100),
+	duracion VARCHAR2(20),
+	tipo VARCHAR2(10),
+	costo NUMBER,
+	member function obtener_costo return NUMBER);
+/
+
+/* Objeto para tabla intermedia para relacionar proyectos con desarrolladores*/
+CREATE OR REPLACE TYPE ProyectDesarr_T AS OBJECT
+	(proyecto REF Proyecto_T,
+	desarrollador REF Desarrollador_T);
+/
+
 /*		Creamos tabla de referencias para Proyecto		*/
 CREATE OR REPLACE TYPE Proyectos_ref AS TABLE OF REF Proyecto_T;
 /
@@ -104,22 +120,6 @@ CREATE OR REPLACE TYPE Cliente_T AS OBJECT
 	nombre VARCHAR(40),
 	tlf telefonos,
 	proyectos Proyectos_ref);
-/
-
-/*		Relacion 1:N Cliente-Proyecto		*/
-CREATE OR REPLACE TYPE Proyecto_T AS OBJECT
-	(nombre VARCHAR2(50),
-	descripcion VARCHAR2(100),
-	duracion VARCHAR2(20),
-	tipo VARCHAR2(5),
-	costo NUMBER,
-	member function obtener_costo return NUMBER);
-/
-
-/* Objeto para tabla intermedia para relacionar proyectos con desarrolladores*/
-CREATE OR REPLACE TYPE ProyectDesarr_T AS OBJECT
-	(proyecto REF Proyecto_T,
-	desarrollador REF Desarrollador_T);
 /
 
 /*****************************************
