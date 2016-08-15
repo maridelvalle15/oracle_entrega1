@@ -75,7 +75,7 @@ CREATE OR REPLACE TYPE Desarrollador_senior_T UNDER Desarrollador_T
 /
 
 /*		Creamos tabla de referencias para Desarrollador		*/
-CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF REF Desarrollador_T;
+CREATE OR REPLACE TYPE Desarrollador_ref AS TABLE OF Desarrollador_T;
 /
 
 /*		Creamos objeto para relacion 1:1 Jefe-Departamento		*/
