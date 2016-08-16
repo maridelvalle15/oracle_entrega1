@@ -162,15 +162,10 @@ SELECT DEREF(d.jefe_dep) FROM Departamento d WHERE d.nombre='Departamento 1';
 /* Consulta de todos los desarrolladores senior */
 SELECT d.nombre, d.apellido, 
         treat(value(d) AS Desarrollador_senior_T).anios_empresa anios_empresa
-		FROM desarrollador d;
+		FROM desarrollador d WHERE value(d) IS OF (ONLY Desarrollador_senior_T);
 
 /* Consulta de los desarrolladores senior que ayudan a los desarrolladores junior */
 SELECT deref(treat(ref(d) AS ref desarrollador_junior_t).senior) senior FROM desarrollador d;
-
-/* Consulta de todos los desarrolladores senior */
-SELECT d.nombre, d.apellido, 
-        treat(value(d) AS Desarrollador_senior_T).anios_empresa anios_empresa
-		FROM desarrollador d;
 
 /* Consulta a tabla anidada: retorna los desarrolladores que trabajan en un departamento */
 SELECT deref(VALUE(f)).cedula cedula, deref(VALUE(f)).nombre nombre_Desarrollador, deref(VALUE(f)).apellido apellido_Desarrollador 
